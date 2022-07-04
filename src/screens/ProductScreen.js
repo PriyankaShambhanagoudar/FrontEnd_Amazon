@@ -1,26 +1,26 @@
-import axios from 'axios';
-import { useContext, useEffect, useReducer } from 'react';
-import {  useNavigate, useParams } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
-import Rating from '../components/Rating';
-import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import { getError } from '../utils';
-import { Store } from '../Store';
+import axios from "axios";
+import { useContext, useEffect, useReducer } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
+import Rating from "../components/Rating";
+import { Helmet } from "react-helmet-async";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
+import { getError } from "../utils";
+import { Store } from "../Store";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FETCH_REQUEST':
+    case "FETCH_REQUEST":
       return { ...state, loading: true };
-    case 'FETCH_SUCCESS':
+    case "FETCH_SUCCESS":
       return { ...state, product: action.payload, loading: false };
-    case 'FETCH_FAIL':
+    case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
@@ -28,53 +28,57 @@ const reducer = (state, action) => {
 };
 
 function ProductScreen() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
 
   const [{ loading, error, product }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
-    error: '',
+    error: "",
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch({ type: 'FETCH_REQUEST' });
+      dispatch({ type: "FETCH_REQUEST" });
       try {
         const result = await axios.get(`/api/products/slug/${slug}`);
-        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        dispatch({ type: "FETCH_SUCCESS", payload: result.data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
       }
     };
     fetchData();
-
-
   }, [slug]);
 
-
+  /*   rename  dispatch to  ctxDispatch   useContext= by using usecontext , we can have access to the state of the context  & change the context */
   const { state, dispatch: ctxDispatch } = useContext(Store);
 
   const { cart } = state;
 
   const addToCartHandler = async () => {
-
+    /*  if  current product exists in the cart or not  */
     const existItem = cart.cartItems.find((x) => x._id === product._id);
 
+    /* if its exists  i need to increase the quantity by one  */
     const quantity = existItem ? existItem.quantity + 1 : 1;
 
+    /*   if product content is stock    is not less then the quantity   iam going to add to their cart*/
     const { data } = await axios.get(`/api/products/${product._id}`);
+    /*  if product content stock  is less then  quntity (adding to  cart )  need to show this error */
     if (data.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
+      window.alert("Sorry. Product is out of stock");
       return;
     }
-
+    /* dispatching the action  */
     ctxDispatch({
-      type: 'CART_ADD_ITEM',
+      //type
+      type: "CART_ADD_ITEM",
+      //adding quantity to payload
       payload: { ...product, quantity },
     });
-    navigate('/cart')
+
+    navigate("/cart");
   };
   return loading ? (
     <LoadingBox />
@@ -84,11 +88,7 @@ function ProductScreen() {
     <div>
       <Row>
         <Col md={6}>
-          <img
-            className="img-large"
-            src={product.image}
-            alt={product.name}
-          ></img>
+          <img className="img-large" src={product.image} alt={product.name}></img>
         </Col>
         <Col md={3}>
           <ListGroup variant="flush">
@@ -99,10 +99,7 @@ function ProductScreen() {
               <h1>{product.name}</h1>
             </ListGroup.Item>
             <ListGroup.Item>
-              <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
-              ></Rating>
+              <Rating rating={product.rating} numReviews={product.numReviews}></Rating>
             </ListGroup.Item>
             <ListGroup.Item>Pirce : ${product.price}</ListGroup.Item>
             <ListGroup.Item>
@@ -152,5 +149,3 @@ function ProductScreen() {
   );
 }
 export default ProductScreen;
-
-

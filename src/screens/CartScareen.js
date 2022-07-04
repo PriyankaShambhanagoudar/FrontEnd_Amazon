@@ -12,7 +12,10 @@ import axios from 'axios';
 
 export default function CartScreen() {
     const navigate = useNavigate();
+
+    /*   rename  dispatch to  ctxDispatch   useContext= by using usecontext , we can have access to the state of the context  & change the context */
     const { state, dispatch: ctxDispatch } = useContext(Store);
+    
     const {
         cart: { cartItems },
     } = state;
