@@ -77,9 +77,10 @@ function ProductScreen() {
       //adding quantity to payload
       payload: { ...product, quantity },
     });
-
+    
     navigate("/cart");
   };
+
   return loading ? (
     <LoadingBox />
   ) : error ? (
@@ -130,7 +131,6 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
                     <div className="d-grid">

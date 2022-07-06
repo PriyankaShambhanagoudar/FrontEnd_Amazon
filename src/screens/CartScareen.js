@@ -15,18 +15,23 @@ export default function CartScreen() {
 
     /*   rename  dispatch to  ctxDispatch   useContext= by using usecontext , we can have access to the state of the context  & change the context */
     const { state, dispatch: ctxDispatch } = useContext(Store);
-    
+
+    /*  */
     const {
         cart: { cartItems },
     } = state;
-
+    /* increase & descrease item  */
     const updateHandler = async (item, quantity) => {
+        /* get current item quantity from backend  */
         const { data } = await axios.get(`/api/products/${item._id}`);
+        /* if  */
         if (data.countInStock < quantity) {
             window.alert('Sorry. Product is out of stock');
             return;
         }
 
+
+        /*  */
         ctxDispatch({
             type: 'CART_ADD_ITEM',
             payload: { ...item, quantity },
@@ -34,12 +39,13 @@ export default function CartScreen() {
 
 
     }
-
+    /*  remove item in the cart */
     const removeItemHandler = (item) => {
+
         ctxDispatch({ type: "CART_REMOVE_ITEM", payload: item });
     }
 
-
+    /* checkout */
     const checkoutHandler = () => {
         navigate('/signin?redirect=/shipping');
     }
@@ -50,31 +56,43 @@ export default function CartScreen() {
             </Helmet>
             <h1>Shopping Cart</h1>
             <Row>
+                {/* showing list of item */}
                 <Col md={8}>
+                    {/* if cart length  0 need to show message cart is empty */}
                     {cartItems.length === 0 ? (
+                        /*  */
                         <MessageBox>
                             Cart is empty. <Link to="/">Go Shopping</Link>
                         </MessageBox>
                     ) : (
+                        /* list of item */
                         <ListGroup>
                             {cartItems.map((item) => (
                                 <ListGroup.Item key={item._id}>
                                     <Row className="align-items-center">
                                         <Col md={4}>
+                                            {/*  item image*/}
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
                                                 className="img-fluid rounded img-thumbnail"
-                                            ></img>{' '}
+                                            ></img>
+
                                             <Link to={`/product/${item.slug}`}>{item.name}</Link>
                                         </Col>
+
+
+                                        {/* button Increase & decrease product quantity  */}
                                         <Col md={3}>
+                                            {/* Decrease item quantity */}
                                             <Button
                                                 onClick={() => updateHandler(item, item.quantity - 1)}
                                                 variant="light" disabled={item.quantity === 1}>
                                                 <i className="fas fa-minus-circle"></i>
-                                            </Button>{' '}
-                                            <span>{item.quantity}</span>{' '}
+                                            </Button>
+
+                                            <span>{item.quantity}</span>
+                                            {/* Increase item quantity */}
                                             <Button
                                                 variant="light"
                                                 onClick={() => updateHandler(item, item.quantity + 1)}
@@ -83,8 +101,11 @@ export default function CartScreen() {
                                                 <i className="fas fa-plus-circle"></i>
                                             </Button>
                                         </Col>
+
                                         <Col md={3}>${item.price}</Col>
+                                        {/*  remove item*/}
                                         <Col md={2}>
+                                            {/*remove item in cart  */}
                                             <Button
                                                 onClick={() => removeItemHandler(item)}
                                                 variant="light">
@@ -97,11 +118,13 @@ export default function CartScreen() {
                         </ListGroup>
                     )}
                 </Col>
+                {/*action part(CHECKOUT)  */}
                 <Col md={4}>
                     <Card>
                         <Card.Body>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
+                                    {/*    Total price and quantity  */}
                                     <h3>
                                         Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '}
                                         items) : $
@@ -109,6 +132,7 @@ export default function CartScreen() {
                                     </h3>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
+                                    {/*checkout button  */}
                                     <div className="d-grid">
                                         <Button
                                             onClick={() => checkoutHandler()}

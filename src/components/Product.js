@@ -15,7 +15,7 @@ function Product(props) {
   } = state;
 
 
-
+  /* adding item to cart from home screen  */
   const addToCartHandler = async (item) => {
 
     const existItem = cartItems.find((x) => x._id === product._id);
@@ -47,6 +47,7 @@ function Product(props) {
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
         <Card.Text>${product.price}</Card.Text>
+        {/* if stock equal to 0 button disabled */}
         {product.countInStock === 0 ? <Button variant='light' disabled>Out of stock</Button> :
           <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>}
       </Card.Body>
