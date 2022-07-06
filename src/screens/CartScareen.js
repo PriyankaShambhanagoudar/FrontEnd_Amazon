@@ -48,7 +48,8 @@ export default function CartScreen() {
     /* checkout */
     const checkoutHandler = () => {
         navigate('/signin?redirect=/shipping');
-    }
+    };
+
     return (
         <div>
             <Helmet>
@@ -135,9 +136,9 @@ export default function CartScreen() {
                                     {/*checkout button  */}
                                     <div className="d-grid">
                                         <Button
-                                            onClick={() => checkoutHandler()}
                                             type="button"
                                             variant="primary"
+                                            onClick={checkoutHandler}
                                             disabled={cartItems.length === 0}
                                         >
                                             Proceed to Checkout
