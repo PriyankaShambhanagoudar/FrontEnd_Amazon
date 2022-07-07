@@ -3,18 +3,29 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
+  /*/////////////// userInfo////////////////////// */
 
-  
   /* get userInfo   from localStorage  */
   userInfo: localStorage.getItem('userInfo')
     /*  if its exist convert to json parse (userInfo) */
     ? JSON.parse(localStorage.getItem('userInfo'))
-    /* otherwise set it to null */
+    /* otherwise set it to empty object */
     : null,
 
 
 
   cart: {
+    /*/////////////// shippingAddress////////////////////// */
+    /* get shippingAddress   from localStorage */
+    shippingAddress: localStorage.getItem('shippingAddress')
+      /*  if its exist convert to json parse (shippingAddress) */
+      ? JSON.parse(localStorage.getItem('shippingAddress'))
+      /* otherwise set it to null */
+      : {},
+
+
+    /*/////////////// cartItems////////////////////// */
+
     /*  if cart item exist in local  storage  */
     cartItems: localStorage.getItem('cartItems')
       /*  use json that power convert to  this  history to js  */
@@ -83,7 +94,25 @@ function reducer(state, action) {
       return {
         ...state,
         userInfo: null,
+        cart: {
+          cartItems: [],
+          shippingAddress: {}
+        }
       }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //save shpping address
+    case "SAVE_SHIPPING_ADDRESS":
+      return {
+        /*  previous stat*/
+        ...state,
+        /* taking only shpping address */
+        cart: {
+          ...state.cart,
+          shippingAddress: action.payload,
+        }
+      }
+
 
     default:
       return state;
