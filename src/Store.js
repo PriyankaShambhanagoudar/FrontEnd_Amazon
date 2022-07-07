@@ -3,6 +3,17 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
+
+  
+  /* get userInfo   from localStorage  */
+  userInfo: localStorage.getItem('userInfo')
+    /*  if its exist convert to json parse (userInfo) */
+    ? JSON.parse(localStorage.getItem('userInfo'))
+    /* otherwise set it to null */
+    : null,
+
+
+
   cart: {
     /*  if cart item exist in local  storage  */
     cartItems: localStorage.getItem('cartItems')
@@ -14,6 +25,9 @@ const initialState = {
 };
 function reducer(state, action) {
   switch (action.type) {
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     case 'CART_ADD_ITEM':
       // add to cart
 
@@ -41,6 +55,8 @@ function reducer(state, action) {
 
     //remove item in the cart 
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     case 'CART_REMOVE_ITEM': {
       /* if the item id does not qual to to current id return it otherwise remove it   */
       const cartItems = state.cart.cartItems.filter(
@@ -52,6 +68,22 @@ function reducer(state, action) {
       /*  {this object keep  all values in field,   cart= keep all previous  values in the cart objects  in the state  and only update cartitems }  */
       return { ...state, cart: { ...state.cart, cartItems } }
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    case 'USER_SIGNIN':
+      /*previous state & update the user info based one the data we got from back end (data)  */
+      return { ...state, userInfo: action.payload };
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    case 'USER_SIGNOUT':
+      /* previous state & userInfo null */
+      return {
+        ...state,
+        userInfo: null,
+      }
 
     default:
       return state;
