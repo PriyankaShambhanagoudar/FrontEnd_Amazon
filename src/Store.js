@@ -3,7 +3,7 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
-  /*/////////////// userInfo////////////////////// */
+  /*/////////////////////////////////////////////////////////// userInfo///////////////////////////////////////////////////////// */
 
   /* get userInfo   from localStorage  */
   userInfo: localStorage.getItem('userInfo')
@@ -15,7 +15,8 @@ const initialState = {
 
 
   cart: {
-    /*/////////////// shippingAddress////////////////////// */
+    /*/////////////////////////////////////////////////////////// shippingAddress///////////////////////////////////////////////////////// */
+
     /* get shippingAddress   from localStorage */
     shippingAddress: localStorage.getItem('shippingAddress')
       /*  if its exist convert to json parse (shippingAddress) */
@@ -24,7 +25,17 @@ const initialState = {
       : {},
 
 
-    /*/////////////// cartItems////////////////////// */
+    /*/////////////////////////////////////////////////////////// paymentMethod///////////////////////////////////////////////////////// */
+
+    /* get paymentMethod   from localStorage */
+    paymentMethod: localStorage.getItem('paymentMethod')
+      /*  if its exist convert to json parse (paymentMethod) */
+      ? localStorage.getItem('paymentMethod')
+      /* otherwise set it to empty string */
+      : '',
+
+    /*/////////////////////////////////////////////////////////// cartItems///////////////////////////////////////////////////////// */
+
 
     /*  if cart item exist in local  storage  */
     cartItems: localStorage.getItem('cartItems')
@@ -96,7 +107,8 @@ function reducer(state, action) {
         userInfo: null,
         cart: {
           cartItems: [],
-          shippingAddress: {}
+          shippingAddress: {},
+          paymentMethod: '',
         }
       }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +124,14 @@ function reducer(state, action) {
           shippingAddress: action.payload,
         }
       }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //payment
+    case 'SAVE_PAYMENT_METHOD':
+      return {
+        ...state,
+        cart: { ...state.cart, paymentMethod: action.payload },
+      }
 
     default:
       return state;

@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { Store } from '../Store';
 import { useNavigate } from 'react-router-dom';
+
+import { Store } from '../Store';
 import CheckoutSteps from '../components/CheckoutSteps';
 
 
 const ShippingAddressScreen = () => {
+
     const navigate = useNavigate();
     const { state, dispatch: ctxDispatch } = useContext(Store);
     const {
@@ -30,9 +32,8 @@ const ShippingAddressScreen = () => {
     useEffect(() => {
         if (!userInfo) {
             navigate('/signin?redirect=/shipping');
-
         }
-    }, [userInfo, navigate])
+    }, [userInfo, navigate]);
 
 
     /* country */
@@ -41,8 +42,7 @@ const ShippingAddressScreen = () => {
 
 
     const submitHandler = (e) => {
-        e.preventdefault()
-
+        e.preventDefault();
         ctxDispatch({
             type: 'SAVE_SHIPPING_ADDRESS',
             payload: {
@@ -53,7 +53,6 @@ const ShippingAddressScreen = () => {
                 country,
             },
         });
-
         localStorage.setItem(
             'shippingAddress',
             JSON.stringify({
@@ -64,7 +63,6 @@ const ShippingAddressScreen = () => {
                 country,
             })
         );
-
         navigate('/payment');
 
     }
@@ -74,9 +72,10 @@ const ShippingAddressScreen = () => {
             <Helmet>
                 <title>Shipping Address</title>
             </Helmet>
+
             <CheckoutSteps step1 step2></CheckoutSteps>
-            <div className='container small-container'>
-                <h1 className='my-3'>Shipping Address</h1>
+            <div className="container small-container">
+                <h1 className="my-3">Shipping Address</h1>
                 <Form onSubmit={submitHandler}>
                     <Form.Group className="mb-3" controlId="fullName">
                         <Form.Label>Full Name</Form.Label>
