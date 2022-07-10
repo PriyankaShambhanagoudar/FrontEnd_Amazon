@@ -35,7 +35,7 @@ const PaymentMethodScreen = () => {
 
         localStorage.setItem('paymentMethod', paymentMethodName);
 
-        navigate('/ ');
+        navigate('/placeorder ');
     };
 
     return (

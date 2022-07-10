@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useReducer } from 'react';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -8,10 +8,36 @@ import { Link, useNavigate } from 'react-router-dom';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { Store } from '../Store';
 import { Helmet } from 'react-helmet-async';
+import { toast } from "react-toastify";
+import { getError } from '../utils';
+import LoadingBox from '../components/LoadingBox';
+import Axios from "axios"
+
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'CREATE_REQUEST':
+            return { ...state, loading: true };
+        case 'CREATE_SUCCESS':
+            return { ...state, loading: false };
+        case 'CREATE_FAIL':
+            return { ...state, loading: false };
+        default:
+            return state;
+    }
+};
 
 
 const PlaceOrderScreen = () => {
     const navigate = useNavigate();
+
+    const [{ loading, }, dispatch] = useReducer(reducer, {
+        loading: false,
+
+    });
+
+
+
     const { state, dispatch: ctxDispatch } = useContext(Store)
     const { cart, userInfo } = state;
 
@@ -33,7 +59,42 @@ const PlaceOrderScreen = () => {
 
 
     const placeOrderHandler = async () => {
+        try {
+            dispatch({ type: 'CREATE_REQUEST' })
 
+            const { data } = await Axios.post(
+                '/api/orders',
+                {
+                    orderItems: cart.cartItems,
+                    shippingAddress: cart.shippingAddress,
+                    paymentMethod: cart.paymentMethod,
+                    itemsPrice: cart.itemsPrice,
+                    shippingPrice: cart.shippingPrice,
+                    taxPrice: cart.taxPrice,
+                    totalPrice: cart.totalPrice,
+                },
+                {
+                    headers: {
+                        authorization: `Bearer ${userInfo.token}`,
+                    },
+                }
+            );
+            /*this dispatch going to store  */
+            ctxDispatch({ type: 'CART_CLEAR' });
+
+            /*   this dispatch is going reducer*/
+            dispatch({ type: 'CREATE_SUCCESS' });
+
+            /*  removing the item in localstorageS */
+            localStorage.removeItem('cartItems');
+
+            /*  naviagate/redirect  to  orderDetails*/
+            navigate(`/order/${data.order._id}`);
+
+        } catch (err) {
+            dispatch({ type: 'CREATE_FAIL' })
+            toast.error(getError(err))
+        }
     }
 
 
@@ -166,6 +227,8 @@ const PlaceOrderScreen = () => {
                                         Place Order
                                     </Button>
                                 </div>
+                                {/* loading  */}
+                                { loading && <LoadingBox></LoadingBox>}
                             </ListGroup.Item>
                         </Card.Body>
                     </Card>

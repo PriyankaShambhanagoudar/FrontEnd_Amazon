@@ -93,6 +93,18 @@ function reducer(state, action) {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    case 'CART_CLEAR':
+      return {
+        /* previous state  */
+        ...state,
+        /* previous state of the cart & adding cartItem to empty array(removing all the item from cart ) */
+        
+        cart: { ...state.cart, cartItems: [] },
+      }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     case 'USER_SIGNIN':
       /*previous state & update the user info based one the data we got from back end (data)  */
       return { ...state, userInfo: action.payload };
