@@ -61,7 +61,7 @@ function reducer(state, action) {
         (item) => item._id === newItem._id
       );
 
-      /*  if alreday have item in the cart  & we need to update the  current  item with new item  that we got from action payload  otherwise  keep previous item in the cart    */
+      /*  if alreday have item in the cart  & we need to update the  current  item with new item  that we got from action payload  otherwise  keep previous item in the cart  */
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
           item._id === existItem._id ? newItem : item
