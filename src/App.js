@@ -1,62 +1,93 @@
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
-import HomeScreen from './screens/HomeScreen';
-import ProductScreen from './screens/ProductScreen';
-import Navbar from 'react-bootstrap/Navbar';
-import Badge from 'react-bootstrap/Badge';
-import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-import { LinkContainer } from 'react-router-bootstrap';
-import { useContext } from 'react';
-import { Store } from './Store';
-import CartScareen from './screens/CartScareen';
-import SiginScreen from './screens/SigninScreen';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ShippingAddressScreen from './screens/ShippingAddressScreen';
-import SiginupScreen from './screens/SignupScreen';
-import PaymentMethodScreen from './screens/PaymentMethodScreen';
-import PlaceOrderScreen from './screens/PlaceOrderScreen';
-import OrderScreen from './screens/OrderScreen';
-import OrderHistoryScreen from './screens/OrderHistoryScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import React, { useState, useEffect, useContext } from "react";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import HomeScreen from "./screens/HomeScreen";
+import ProductScreen from "./screens/ProductScreen";
+import Navbar from "react-bootstrap/Navbar";
+import Badge from "react-bootstrap/Badge";
+import Nav from "react-bootstrap/Nav";
+import Container from "react-bootstrap/Container";
+import { LinkContainer } from "react-router-bootstrap";
+import { Store } from "./Store";
+import CartScareen from "./screens/CartScareen";
+import SiginScreen from "./screens/SigninScreen";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ShippingAddressScreen from "./screens/ShippingAddressScreen";
+import SiginupScreen from "./screens/SignupScreen";
+import PaymentMethodScreen from "./screens/PaymentMethodScreen";
+import PlaceOrderScreen from "./screens/PlaceOrderScreen";
+import OrderScreen from "./screens/OrderScreen";
+import OrderHistoryScreen from "./screens/OrderHistoryScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import Button from 'react-bootstrap/Button';
+import { getError } from "./utils.js"
+import axios from 'axios';
+import SearchBox from "./components/SearchBox";
 
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
 
-  //sigout handler 
+  //sigout handler
   const signoutHandler = () => {
-    ctxDispatch({ type: 'USER_SIGNOUT' });
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('shippingAddress');
-    localStorage.removeItem('paymentMethod');
-    window.location.href = '/signin';
+    ctxDispatch({ type: "USER_SIGNOUT" });
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("shippingAddress");
+    localStorage.removeItem("paymentMethod");
+    window.location.href = "/signin";
   };
 
+  /* sidebar */
+  const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
+  /* sidebar categories */
+  const [categories, setCategories] = useState([]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get(`/api/products/categories`);
+        setCategories(data);
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
+    fetchCategories()
+  }, [])
   return (
     <BrowserRouter>
-      <div className="d-flex flex-column site-container">
-        {/*  */}
+      <div
+        className={
+          sidebarIsOpen
+            ? "d-flex flex-column site-container active-cont"
+            : "d-flex flex-column site-container"
+        }
+      >
         <ToastContainer position="bottom-center" limit={1} />
 
         <header>
           <Navbar bg="dark" variant="dark" expand="lg">
-
             <Container>
+              <Button
+                variant="dark"
+                onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+              >
+                <i className="fas fa-bars"></i>
+              </Button>
+
+
+
               <LinkContainer to="/">
                 <Navbar.Brand>amazona</Navbar.Brand>
               </LinkContainer>
-              <Navbar.Toggle aria-controls='basic-navbar-nav' />
-              <Navbar.Collapse aria-controls='basic-navbar-nav' >
-                <Nav className="me-auto  w-100  justify-content-end" >
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse aria-controls="basic-navbar-nav">
+                <SearchBox />
+                <Nav className="me-auto  w-100  justify-content-end">
                   <Link to="/cart" className="nav-link">
                     Cart
-
                     {/* if in cart & cartItems greater then 0  need to show number of item in the cart */}
-
                     {cart.cartItems.length > 0 && (
                       <Badge pill bg="danger">
                         {/*  */}
@@ -96,6 +127,29 @@ function App() {
             </Container>
           </Navbar>
         </header>
+        <div className={
+          sidebarIsOpen
+            ? 'active-nav side-navbar d-flex justify-content-between flex-wrap flex-column'
+            : 'side-navbar d-flex justify-content-between flex-wrap flex-column'
+        }>
+
+          <Nav className="flex-column text-white w-100 p-2">
+            <Nav.Item>
+              <strong>Categories</strong>
+            </Nav.Item>
+            {categories.map((category) => (
+              <Nav.Item key={category}>
+                <LinkContainer
+                  to={`/search?category=${category}`}
+                  onClick={() => setSidebarIsOpen(false)}
+                >
+                  <Nav.Link>{category}</Nav.Link>
+                </LinkContainer>
+              </Nav.Item>
+            ))}
+          </Nav>
+
+        </div>
         <main>
           <Container className="mt-3">
             <Routes>
@@ -117,7 +171,7 @@ function App() {
           <div className="text-center">All rights reserved</div>
         </footer>
       </div>
-    </BrowserRouter >
+    </BrowserRouter>
   );
 }
 
