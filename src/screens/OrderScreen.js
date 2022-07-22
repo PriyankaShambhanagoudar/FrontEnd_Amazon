@@ -58,6 +58,7 @@ const OrderScreen = () => {
         successPay: false,
         loadingPay: false
     });
+    // console.log(dispatch);
 
     /* clientId getting from   the paypal ( it's work like a useReducer hook )  */
     const [{ isPending }, paypalDispatch] = usePayPalScriptReducer() //useReducer
@@ -75,6 +76,7 @@ const OrderScreen = () => {
             })
             /* need to return orderId from the paypal  */
             .then((orderID) => {
+                console.log(orderID);
                 return orderID;
             });
     }
@@ -96,16 +98,19 @@ const OrderScreen = () => {
                     }
                 );
                 dispatch({ type: 'PAY_SUCCESS', payload: data });
+
                 toast.success('Order is paid');
             } catch (err) {
                 dispatch({ type: 'PAY_FAIL', payload: getError(err) });
                 toast.error(getError(err));
+                console.log(getError(err));
             }
         });
     }
     /* error payapl */
     function onError(err) {
         toast.error(getError(err));
+        console.log(getError(err));
     }
 
     useEffect(() => {
@@ -149,7 +154,7 @@ const OrderScreen = () => {
                     type: 'resetOptions',
                     value: {
                         'client-id': clientId,
-                        currency: 'USD', //INR
+                        currency: 'USD',
                     },
                 });
                 paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
