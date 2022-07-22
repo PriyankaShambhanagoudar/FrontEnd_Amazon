@@ -19,7 +19,7 @@ import PaymentMethodScreen from './screens/PaymentMethodScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
-
+import ProfileScreen from './screens/ProfileScreen';
 
 
 function App() {
@@ -32,6 +32,7 @@ function App() {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('shippingAddress');
     localStorage.removeItem('paymentMethod');
+    window.location.href = '/signin';
   };
 
 
@@ -63,6 +64,7 @@ function App() {
                       </Badge>
                     )}
                   </Link>
+
                   {userInfo ? (
                     /* AFTER LOGIN User profile & orderHistory */
                     <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
@@ -105,8 +107,8 @@ function App() {
               <Route path="/payment" element={<PaymentMethodScreen />} />
               <Route path="/placeorder" element={<PlaceOrderScreen />} />
               <Route path="/order/:id" element={<OrderScreen />} />
-              {/* <Route path="/orderhistory" lement={<OrderHistoryScreen />} /> */}
-              <Route path="/orderhistory" element={<OrderHistoryScreen />}  ></Route>
+              <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+              <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>
